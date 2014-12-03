@@ -63,20 +63,12 @@ the generation of a class list and an automatic constructor.
     MMUINavigationController *tabControl = (MMUINavigationController *)[UIApplication sharedApplication].delegate.window.rootViewController;
 //     tabControl.currentViewController;
     
-//     AddFriendEntryViewController *afev = [AddFriendEntryViewController new];
-//     [tabControl pushViewController:afev animated:YES]; 
 
-//  	Class afClass = NSClassFromString(@"AddFriendEntryViewController");
-//     AddFriendEntryViewController *adObject = [[afClass alloc] init];
-// 	NSLog(@"%p", tabControl);
 	paramDic[@"tapbar"] = [tabControl description];
-// 	paramDic[@"AddFriendEntryViewController"] = [adObject description];
 	
-// 	UINavigationController *&currentViewController = MSHookIvar<UINavigationController*>(tabControl, "_currentViewController");
 	
 	UINavigationController *currentViewController = [tabControl performSelector:@selector(currentViewController) withObject:nil];
 	paramDic[@"currentViewController"] = [currentViewController description];
-// 	[currentViewController pushViewController:adObject animated:YES];
 	UIAlertView *alertView =  [[UIAlertView alloc] initWithTitle:@"拦截成功,参数如下" message:[paramDic description] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	alertView.tag = 33434;
 	[alertView show];
@@ -86,14 +78,39 @@ the generation of a class list and an automatic constructor.
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == 33434) {
-    MMUINavigationController *tabControl = (MMUINavigationController *)[UIApplication sharedApplication].delegate.window.rootViewController;
+    	MMUINavigationController *tabControl = (MMUINavigationController *)[UIApplication sharedApplication].delegate.window.rootViewController;
 
  	Class afClass = NSClassFromString(@"AddFriendEntryViewController");
-    AddFriendEntryViewController *adObject = [[afClass alloc] init];
+    	AddFriendEntryViewController *adObject = [[afClass alloc] init];
+	
+
+	//UIView *friendsView = adObject.view;
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+       		UIView *&headerView = MSHookIvar<UIView*>(adObject,"m_headerSearchView");
+		UIView *&searchBarUI = MSHookIvar<UIView*>(headerView,"m_searchBar");
+		UISearchBar *&finalSearchBarView =  MSHookIvar<UISearchBar*>(searchBarUI,"m_searchBar");
+		finalSearchBarView.text = @"475411112";	
+		NSLog(@"%p", searchBarUI);
+		[searchBarUI performSelector:@selector(searchBarSearchButtonClicked:) withObject:nil];
+	});
+	//UIView *&headerView = MSHookIvar<UIView*>(adObject,"m_headerSearchView");//adObject.m_headerSearchView;	
+	//UIView *&searchBarUI = MSHookIvar<UIView*>(headerView,"m_searchBar");
+	//UISearchBar *&finalSearchBarView =  MSHookIvar<UISearchBar*>(searchBarUI,"m_searchBar");
+	//finalSearchBarView.text = @"475411112";
+	
+	//NSLog(@"%p", searchBarUI);
+	//NSLog(@"%p", friendsView);
+	//NSLog(@"%p", finalSearchBarView);
+
 	UINavigationController *currentViewController = [tabControl performSelector:@selector(currentViewController) withObject:nil];
 	[currentViewController pushViewController:adObject animated:YES];
     }
 }
+
+
+%end
+
+%hook AddFriendEntryViewController
 
 
 %end
