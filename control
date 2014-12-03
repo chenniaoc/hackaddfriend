@@ -1,0 +1,9 @@
+Package: com.yuchen.hackaddfriend
+Name: hackAddFriend
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: YuchenZhang
+Author: YuchenZhang
+Section: Tweaks
