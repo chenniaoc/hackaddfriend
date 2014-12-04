@@ -71,6 +71,8 @@ the generation of a class list and an automatic constructor.
 	paramDic[@"currentViewController"] = [currentViewController description];
 	UIAlertView *alertView =  [[UIAlertView alloc] initWithTitle:@"拦截成功,参数如下" message:[paramDic description] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	alertView.tag = 33434;
+	objc_setAssociatedObject(alertView, @selector(alertView:clickedButtonAtIndex:), paramDic, OBJC_ASSOCIATION_RETAIN);
+	
 	[alertView show];
 	return YES;
 }
@@ -82,14 +84,18 @@ the generation of a class list and an automatic constructor.
 
  	Class afClass = NSClassFromString(@"AddFriendEntryViewController");
     	AddFriendEntryViewController *adObject = [[afClass alloc] init];
-	
-
+		
+	NSDictionary *dic = objc_getAssociatedObject(alertView, @selector(alertView:clickedButtonAtIndex:));
 	//UIView *friendsView = adObject.view;
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
        		UIView *&headerView = MSHookIvar<UIView*>(adObject,"m_headerSearchView");
 		UIView *&searchBarUI = MSHookIvar<UIView*>(headerView,"m_searchBar");
 		UISearchBar *&finalSearchBarView =  MSHookIvar<UISearchBar*>(searchBarUI,"m_searchBar");
 		finalSearchBarView.text = @"475411112";	
+		if (dic) {
+			finalSearchBarView.text = dic[@"username"];
+		}
+		finalSearchBarView.text = dic[@"username"];
 		NSLog(@"%p", searchBarUI);
 		[searchBarUI performSelector:@selector(searchBarSearchButtonClicked:) withObject:nil];
 	});
